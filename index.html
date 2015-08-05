@@ -1,0 +1,35 @@
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Vago</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="vendor/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/vago.css">
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+	<script src="vendor/ocanvas/ocanvas.min.js"></script>
+	<script src="js/jquery.vago.js"></script>
+	<script>
+		$(function() {
+			var vago = $('.js-cover').Vago();
+		});
+	</script>
+</head>
+<body>
+	<div class="main-container container-fluid">
+		<div class="row">
+			<div class="col-lg-12">
+				<canvas class="cover js-cover center-block" width="500" height="500"></canvas>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-lg-12">
+				<p class="text-center">
+					Recarga la página para seguir flipándolo en colores
+				</p>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
