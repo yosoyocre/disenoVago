@@ -8,12 +8,15 @@
 
 	<script src="vendor/jquery/jquery.min.js"></script>
 	<script src="vendor/ocanvas/ocanvas.min.js"></script>
+	<script src="vendor/leaverou/color.js"></script>
 	<script src="js/jquery.vago.js"></script>
 	<script>
 		$(function() {
+			console.log('--- Portada ---');
 			var $cover = $('.js-cover').vago();
 			var cover = $.data($cover.get(0), 'plugin_vago');
 
+			console.log('--- Favicon ---');
 			var $faviconCanvas = $('<canvas width="16" height="16">');
 			var $favicon = $('<link>');
 

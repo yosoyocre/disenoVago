@@ -3,14 +3,32 @@
   'use strict';
 
   var pluginName = 'vago';
+  var gray = new Color('rgba(200, 200, 200, 1)');
   var maxX;
   var maxY;
 
   function getRandomColor() {
-    return 'rgba(' +
-      Math.floor(Math.random() * 255) + ',' +
-      Math.floor(Math.random() * 255) + ',' +
-      Math.floor(Math.random() * 255) + ', 1)';
+    var r;
+    var g;
+    var b;
+    var rgba;
+    var color;
+    var contrast;
+
+    r = Math.floor(Math.random() * 255);
+    g = Math.floor(Math.random() * 255);
+    b = Math.floor(Math.random() * 255);
+
+    rgba = 'rgba(' + r + ', ' + g + ', ' + b + ', 1)';
+
+    color = new Color(rgba);
+    contrast = color.contrast(gray).ratio;
+
+    if (contrast < 2) {
+      return getRandomColor();
+    }
+
+    return rgba;
   }
 
   function cloneArray(a) {
