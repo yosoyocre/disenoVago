@@ -159,7 +159,11 @@
       var p;
 
       for (p in _this.settings) {
-        console.log(p, ':', _this.settings[p]);
+        if (p === 'background' || p === 'color') {
+          console.log(p + ' : %c' + _this.settings[p], 'color: ' + _this.settings[p]);
+        } else {
+          console.log(p, ':', _this.settings[p]);
+        }
       }
     },
 

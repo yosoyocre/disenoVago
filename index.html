@@ -12,7 +12,9 @@
 	<script>
 		$(function() {
 			console.log('--- Portada ---');
-			var $cover = $('.js-cover').vago();
+			var $cover = $('.js-cover').vago({
+				stepByStep: false,
+			});
 			var cover = $.data($cover.get(0), 'plugin_vago');
 
 			console.log('--- Favicon ---');
@@ -45,7 +47,7 @@
 		<div class="row">
 			<div class="col-lg-12">
 				<p class="text-center">
-					Recarga la página para seguir flipándolo en colores
+					Recarga la página para generar otra portada
 				</p>
 			</div>
 		</div>
