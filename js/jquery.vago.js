@@ -86,6 +86,7 @@
       maxRadius: null,
       degradationLevel: 0.3,
       stepByStep: false,
+      addTitle: true,
     };
 
     this.getRadius = function(matrix, x, y) {
@@ -259,15 +260,17 @@
         y = y + this.settings.maxRadius * 2;
       }
 
-      image = this.canvas.display.image({
-        x: 0,
-        y: 0,
-        image: 'templates/front.png',
-        width: this.canvas.width,
-        height: this.canvas.height,
-      });
+      if (this.settings.addTitle) {
+        image = this.canvas.display.image({
+          x: 0,
+          y: 0,
+          image: 'templates/front.png',
+          width: this.canvas.width,
+          height: this.canvas.height,
+        });
 
-      this.canvas.addChild(image, false);
+        this.canvas.addChild(image, false);
+      }
 
       this.draw();
     },
