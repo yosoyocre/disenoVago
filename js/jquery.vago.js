@@ -2,10 +2,9 @@
 
   'use strict';
 
+  var _this;
   var pluginName = 'vago';
   var grayLuminance = getLuminance(200, 200, 200);
-  var maxX;
-  var maxY;
 
   function cloneArray(a) {
     var b = [];
@@ -18,50 +17,6 @@
 
     return b;
   }
-
-  function getRadius(matrix, x, y) {
-      if (x < 0 || x >= maxX) {
-        return null;
-      }
-
-      if (y < 0 || y >= maxY) {
-        return null;
-      }
-
-      if (!matrix[x]) {
-        return null;
-      }
-
-      if (!matrix[x][y]) {
-        return null;
-      }
-
-      return matrix[x][y];
-    }
-
-  function getAverageRadius(matrix, windowSize, x, y) {
-      var i;
-      var j;
-      var radius;
-      var averageRadius = 0;
-      var n = 0;
-
-      for (i = (windowSize * -1); i <= windowSize; i = i + 1) {
-        for (j = (windowSize * -1); j <= windowSize; j = j + 1) {
-          if (i === 0 && j === 0) {
-            continue;
-          }
-
-          radius = getRadius(matrix, x + i, y + j);
-          if (radius !== null) {
-            averageRadius = averageRadius + radius;
-            n++;
-          }
-        }
-      }
-
-      return n ? averageRadius / n : null;
-    }
 
   function getLuminance(r, g, b) {
     // Fórmula: http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef
@@ -119,6 +74,7 @@
   }
 
   function Vago(element, options) {
+
     var defaults = {
       background: null,
       color: null,
@@ -126,158 +82,234 @@
       windowSize: 1,
       maxRadius: null,
       degradationLevel: 0.3,
+      stepByStep: false,
     };
 
-    this.element = element;
-    this._defaults = defaults;
-    this._name = pluginName;
+    _this = this;
 
-    this.settings = $.extend({}, defaults, options);
+    _this.getRadius = function(matrix, x, y) {
+        if (x < 0 || x >= _this.maxX) {
+          return null;
+        }
 
-    if (!this.settings.background) {
-      this.settings.background = getRandomColor();
+        if (y < 0 || y >= _this.maxY) {
+          return null;
+        }
+
+        if (!matrix[x]) {
+          return null;
+        }
+
+        if (!matrix[x][y]) {
+          return null;
+        }
+
+        return matrix[x][y];
+      };
+
+    _this.getAverageRadius = function(matrix, windowSize, x, y) {
+        var i;
+        var j;
+        var radius;
+        var averageRadius = 0;
+        var n = 0;
+
+        for (i = (windowSize * -1); i <= windowSize; i = i + 1) {
+          for (j = (windowSize * -1); j <= windowSize; j = j + 1) {
+            if (i === 0 && j === 0) {
+              continue;
+            }
+
+            radius = _this.getRadius(matrix, x + i, y + j);
+            if (radius !== null) {
+              averageRadius = averageRadius + radius;
+              n++;
+            }
+          }
+        }
+
+        return n ? averageRadius / n : null;
+      };
+
+    _this.element = element;
+    _this._defaults = defaults;
+    _this._name = pluginName;
+
+    _this.iteration = 1;
+
+    _this.settings = $.extend({}, defaults, options);
+
+    if (!_this.settings.background) {
+      _this.settings.background = getRandomColor();
     }
 
-    if (!this.settings.color) {
-      this.settings.color = getRandomColor();
+    if (!_this.settings.color) {
+      _this.settings.color = getRandomColor();
     }
 
-    if (!this.settings.points) {
-      this.settings.points = Math.floor(Math.random() * 3) + 1;
+    if (!_this.settings.points) {
+      _this.settings.points = Math.floor(Math.random() * 3) + 1;
     }
 
-    this.init();
+    _this.init();
   }
 
   $.extend(Vago.prototype, {
     logSettings: function() {
       var p;
 
-      for (p in this.settings) {
-        console.log(p, ':', this.settings[p]);
+      for (p in _this.settings) {
+        console.log(p, ':', _this.settings[p]);
       }
+    },
+
+    iterate: function() {
+      var auxMatrix = cloneArray(_this.matrix);
+      var shouldIterate = false;
+      var radius;
+      var degradation;
+      var i = 0;
+      var j = 0;
+
+      for (j = 0; j < _this.maxY; j = j + 1) {
+        for (i = 0; i < _this.maxX; i = i + 1) {
+          if (!auxMatrix[i]) {
+            auxMatrix[i] = [];
+          }
+
+          if (!auxMatrix[i][j]) {
+            radius = _this.getAverageRadius(_this.matrix, _this.settings.windowSize, i, j);
+            if (radius !== null) {
+              degradation = Math.random();
+              if (degradation >= _this.settings.degradationLevel) {
+                degradation = 1;
+              }
+
+              auxMatrix[i][j] = Math.floor(degradation * radius);
+              shouldIterate = true;
+            }
+          }
+        }
+      }
+
+      _this.matrix = cloneArray(auxMatrix);
+
+      return shouldIterate;
     },
 
     init: function() {
 
-      this.canvas = oCanvas.create({ canvas: this.element, background: this.settings.background });
+      _this.canvas = oCanvas.create({ canvas: _this.element, background: _this.settings.background });
 
-      if (!this.settings.maxRadius) {
-        this.settings.maxRadius = Math.floor(Math.min(this.canvas.width, this.canvas.height) / 100);
+      if (!_this.settings.maxRadius) {
+        _this.settings.maxRadius = Math.floor(Math.min(_this.canvas.width, _this.canvas.height) / 100);
       }
 
-      maxX = this.canvas.width / (this.settings.maxRadius * 2);
-      maxY = this.canvas.height / (this.settings.maxRadius * 2);
-      this.matrix = [];
+      _this.maxX = _this.canvas.width / (_this.settings.maxRadius * 2);
+      _this.maxY = _this.canvas.height / (_this.settings.maxRadius * 2);
+      _this.matrix = [];
+      _this.circles = [];
 
-      this.logSettings();
+      _this.logSettings();
 
       var shouldIterate = true;
-      var auxMatrix = [];
       var n;
       var i = 0;
       var j = 0;
-      var degradation;
-      var radius;
-      var iterations = 0;
-
-      for (n = 0; n < this.settings.points; n = n + 1) {
-        i = Math.floor(Math.random() * maxX);
-        j = Math.floor(Math.random() * maxY);
-
-        if (!this.matrix[i]) {
-          this.matrix[i] = [];
-        }
-
-        this.matrix[i][j] = this.settings.maxRadius;
-      }
-
-      auxMatrix = cloneArray(this.matrix);
-
-      while (shouldIterate) {
-        shouldIterate = false;
-
-        iterations = iterations + 1;
-
-        for (j = 0; j < maxY; j = j + 1) {
-          for (i = 0; i < maxX; i = i + 1) {
-            if (!auxMatrix[i]) {
-              auxMatrix[i] = [];
-            }
-
-            if (!auxMatrix[i][j]) {
-              radius = getAverageRadius(this.matrix, this.settings.windowSize, i, j);
-              if (radius !== null) {
-                degradation = Math.random();
-                if (degradation >= this.settings.degradationLevel) {
-                  degradation = 1;
-                }
-
-                auxMatrix[i][j] = Math.floor(degradation * radius);
-                shouldIterate = true;
-              }
-            }
-          }
-        }
-
-        this.matrix = cloneArray(auxMatrix);
-      }
-
-      this.draw();
-    },
-
-    draw: function() {
-
-      var radius;
-      var circle;
-      var x = this.settings.maxRadius;
-      var y = this.settings.maxRadius;
       var image;
-      var square;
-      var i;
-      var j;
+      var x = _this.settings.maxRadius;
+      var y = _this.settings.maxRadius;
 
-      for (j = 0; j < maxY; j = j + 1) {
-        for (i = 0; i < maxX; i = i + 1) {
+      for (n = 0; n < _this.settings.points; n = n + 1) {
+        i = Math.floor(Math.random() * _this.maxX);
+        j = Math.floor(Math.random() * _this.maxY);
 
-          radius = getRadius(this.matrix, i, j);
-          radius = radius ? radius : 1;
+        if (!_this.matrix[i]) {
+          _this.matrix[i] = [];
+        }
 
-          circle = this.canvas.display.ellipse({
+        _this.matrix[i][j] = _this.settings.maxRadius;
+      }
+
+      for (j = 0; j < _this.maxY; j = j + 1) {
+        for (i = 0; i < _this.maxX; i = i + 1) {
+
+          if (!_this.circles[i]) {
+            _this.circles[i] = [];
+          }
+
+          _this.circles[i][j] = _this.canvas.display.ellipse({
             x: x,
             y: y,
-            radius: radius,
-            fill: this.settings.color,
+            radius: 1,
+            fill: _this.settings.color,
           });
 
-          this.canvas.addChild(circle, false);
+          _this.canvas.addChild(_this.circles[i][j], false);
 
-          x = x + this.settings.maxRadius * 2;
+          x = x + _this.settings.maxRadius * 2;
         }
 
-        x = this.settings.maxRadius;
-        y = y + this.settings.maxRadius * 2;
+        x = _this.settings.maxRadius;
+        y = y + _this.settings.maxRadius * 2;
       }
 
-      square = this.canvas.display.rectangle({
-        x: this.canvas.width - 200,
-        y: this.canvas.height - 200,
-        width: 200,
-        height: 200,
-        fill: this.settings.background,
-      });
-
-      image = this.canvas.display.image({
+      image = _this.canvas.display.image({
         x: 0,
         y: 0,
         image: 'templates/front.png',
-        width: this.canvas.width,
-        height: this.canvas.height,
+        width: _this.canvas.width,
+        height: _this.canvas.height,
       });
 
-      this.canvas.addChild(image, false);
+      _this.canvas.addChild(image, false);
 
-      this.canvas.redraw();
+      _this.draw();
+    },
+
+    draw: function() {
+      _this.iteration++;
+
+      var shouldIterate = _this.iterate();
+
+      if (_this.settings.stepByStep) {
+        _this.stepDraw();
+      }
+
+      if (shouldIterate) {
+        if (_this.settings.stepByStep) {
+          setTimeout(_this.draw, 100);
+        } else {
+          _this.draw();
+        }
+      } else {
+        console.log(_this.iteration + ' iteraciones');
+
+        if (!_this.settings.stepByStep) {
+          _this.stepDraw();
+        }
+      }
+    },
+
+    stepDraw: function() {
+
+      var radius;
+      var circle;
+      var image;
+      var i;
+      var j;
+
+      for (j = 0; j < _this.maxY; j = j + 1) {
+        for (i = 0; i < _this.maxX; i = i + 1) {
+
+          radius = _this.getRadius(_this.matrix, i, j);
+          radius = radius ? radius : 1;
+
+          _this.circles[i][j].radius = radius;
+        }
+      }
+
+      _this.canvas.redraw();
     },
   });
 
