@@ -2,7 +2,10 @@
 
   'use strict';
 
-  var _this;
+  var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
+                              window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+  window.requestAnimationFrame = requestAnimationFrame;
+
   var pluginName = 'vago';
   var grayLuminance = getLuminance(200, 200, 200);
 
@@ -85,14 +88,12 @@
       stepByStep: false,
     };
 
-    _this = this;
-
-    _this.getRadius = function(matrix, x, y) {
-        if (x < 0 || x >= _this.maxX) {
+    this.getRadius = function(matrix, x, y) {
+        if (x < 0 || x >= this.maxX) {
           return null;
         }
 
-        if (y < 0 || y >= _this.maxY) {
+        if (y < 0 || y >= this.maxY) {
           return null;
         }
 
@@ -107,7 +108,7 @@
         return matrix[x][y];
       };
 
-    _this.getAverageRadius = function(matrix, windowSize, x, y) {
+    this.getAverageRadius = function(matrix, windowSize, x, y) {
         var i;
         var j;
         var radius;
@@ -120,7 +121,7 @@
               continue;
             }
 
-            radius = _this.getRadius(matrix, x + i, y + j);
+            radius = this.getRadius(matrix, x + i, y + j);
             if (radius !== null) {
               averageRadius = averageRadius + radius;
               n++;
@@ -131,61 +132,61 @@
         return n ? averageRadius / n : null;
       };
 
-    _this.element = element;
-    _this._defaults = defaults;
-    _this._name = pluginName;
+    this.element = element;
+    this._defaults = defaults;
+    this._name = pluginName;
 
-    _this.iteration = 1;
+    this.iteration = 1;
 
-    _this.settings = $.extend({}, defaults, options);
+    this.settings = $.extend({}, defaults, options);
 
-    if (!_this.settings.background) {
-      _this.settings.background = getRandomColor();
+    if (!this.settings.background) {
+      this.settings.background = getRandomColor();
     }
 
-    if (!_this.settings.color) {
-      _this.settings.color = getRandomColor();
+    if (!this.settings.color) {
+      this.settings.color = getRandomColor();
     }
 
-    if (!_this.settings.points) {
-      _this.settings.points = Math.floor(Math.random() * 3) + 1;
+    if (!this.settings.points) {
+      this.settings.points = Math.floor(Math.random() * 3) + 1;
     }
 
-    _this.init();
+    this.init();
   }
 
   $.extend(Vago.prototype, {
     logSettings: function() {
       var p;
 
-      for (p in _this.settings) {
+      for (p in this.settings) {
         if (p === 'background' || p === 'color') {
-          console.log(p + ' : %c' + _this.settings[p], 'color: ' + _this.settings[p]);
+          console.log(p + ' : %c' + this.settings[p], 'color: ' + this.settings[p]);
         } else {
-          console.log(p, ':', _this.settings[p]);
+          console.log(p, ':', this.settings[p]);
         }
       }
     },
 
     iterate: function() {
-      var auxMatrix = cloneArray(_this.matrix);
+      var auxMatrix = cloneArray(this.matrix);
       var shouldIterate = false;
       var radius;
       var degradation;
       var i = 0;
       var j = 0;
 
-      for (j = 0; j < _this.maxY; j = j + 1) {
-        for (i = 0; i < _this.maxX; i = i + 1) {
+      for (j = 0; j < this.maxY; j = j + 1) {
+        for (i = 0; i < this.maxX; i = i + 1) {
           if (!auxMatrix[i]) {
             auxMatrix[i] = [];
           }
 
           if (!auxMatrix[i][j]) {
-            radius = _this.getAverageRadius(_this.matrix, _this.settings.windowSize, i, j);
+            radius = this.getAverageRadius(this.matrix, this.settings.windowSize, i, j);
             if (radius !== null) {
               degradation = Math.random();
-              if (degradation >= _this.settings.degradationLevel) {
+              if (degradation >= this.settings.degradationLevel) {
                 degradation = 1;
               }
 
@@ -196,101 +197,104 @@
         }
       }
 
-      _this.matrix = cloneArray(auxMatrix);
+      this.matrix = cloneArray(auxMatrix);
 
       return shouldIterate;
     },
 
     init: function() {
 
-      _this.canvas = oCanvas.create({ canvas: _this.element, background: _this.settings.background });
+      this.canvas = oCanvas.create({ canvas: this.element, background: this.settings.background });
 
-      if (!_this.settings.maxRadius) {
-        _this.settings.maxRadius = Math.floor(Math.min(_this.canvas.width, _this.canvas.height) / 100);
+      if (!this.settings.maxRadius) {
+        this.settings.maxRadius = Math.floor(Math.min(this.canvas.width, this.canvas.height) / 100);
       }
 
-      _this.maxX = _this.canvas.width / (_this.settings.maxRadius * 2);
-      _this.maxY = _this.canvas.height / (_this.settings.maxRadius * 2);
-      _this.matrix = [];
-      _this.circles = [];
+      this.maxX = this.canvas.width / (this.settings.maxRadius * 2);
+      this.maxY = this.canvas.height / (this.settings.maxRadius * 2);
+      this.matrix = [];
+      this.circles = [];
 
-      _this.logSettings();
+      this.logSettings();
 
       var shouldIterate = true;
       var n;
       var i = 0;
       var j = 0;
       var image;
-      var x = _this.settings.maxRadius;
-      var y = _this.settings.maxRadius;
+      var x = this.settings.maxRadius;
+      var y = this.settings.maxRadius;
 
-      for (n = 0; n < _this.settings.points; n = n + 1) {
-        i = Math.floor(Math.random() * _this.maxX);
-        j = Math.floor(Math.random() * _this.maxY);
+      for (n = 0; n < this.settings.points; n = n + 1) {
+        i = Math.floor(Math.random() * this.maxX);
+        j = Math.floor(Math.random() * this.maxY);
 
-        if (!_this.matrix[i]) {
-          _this.matrix[i] = [];
+        if (!this.matrix[i]) {
+          this.matrix[i] = [];
         }
 
-        _this.matrix[i][j] = _this.settings.maxRadius;
+        this.matrix[i][j] = this.settings.maxRadius;
       }
 
-      for (j = 0; j < _this.maxY; j = j + 1) {
-        for (i = 0; i < _this.maxX; i = i + 1) {
+      for (j = 0; j < this.maxY; j = j + 1) {
+        for (i = 0; i < this.maxX; i = i + 1) {
 
-          if (!_this.circles[i]) {
-            _this.circles[i] = [];
+          if (!this.circles[i]) {
+            this.circles[i] = [];
           }
 
-          _this.circles[i][j] = _this.canvas.display.ellipse({
+          this.circles[i][j] = this.canvas.display.ellipse({
             x: x,
             y: y,
             radius: 1,
-            fill: _this.settings.color,
+            fill: this.settings.color,
           });
 
-          _this.canvas.addChild(_this.circles[i][j], false);
+          this.canvas.addChild(this.circles[i][j], false);
 
-          x = x + _this.settings.maxRadius * 2;
+          x = x + this.settings.maxRadius * 2;
         }
 
-        x = _this.settings.maxRadius;
-        y = y + _this.settings.maxRadius * 2;
+        x = this.settings.maxRadius;
+        y = y + this.settings.maxRadius * 2;
       }
 
-      image = _this.canvas.display.image({
+      image = this.canvas.display.image({
         x: 0,
         y: 0,
         image: 'templates/front.png',
-        width: _this.canvas.width,
-        height: _this.canvas.height,
+        width: this.canvas.width,
+        height: this.canvas.height,
       });
 
-      _this.canvas.addChild(image, false);
+      this.canvas.addChild(image, false);
 
-      _this.draw();
+      this.draw();
     },
 
     draw: function() {
-      _this.iteration++;
+      this.iteration++;
 
-      var shouldIterate = _this.iterate();
+      var shouldIterate = this.iterate();
 
-      if (_this.settings.stepByStep) {
-        _this.stepDraw();
+      if (this.settings.stepByStep) {
+        this.stepDraw();
       }
 
       if (shouldIterate) {
-        if (_this.settings.stepByStep) {
-          setTimeout(_this.draw, 100);
+        if (this.settings.stepByStep) {
+          var _this = this;
+          requestAnimationFrame(function() {
+            _this.draw();
+          });
         } else {
-          _this.draw();
+          this.draw();
         }
       } else {
-        console.log(_this.iteration + ' iteraciones');
+        console.log(this.iteration + ' iteraciones');
 
-        if (!_this.settings.stepByStep) {
-          _this.stepDraw();
+        if (!this.settings.stepByStep) {
+          this.stepDraw();
         }
       }
     },
@@ -303,17 +307,17 @@
       var i;
       var j;
 
-      for (j = 0; j < _this.maxY; j = j + 1) {
-        for (i = 0; i < _this.maxX; i = i + 1) {
+      for (j = 0; j < this.maxY; j = j + 1) {
+        for (i = 0; i < this.maxX; i = i + 1) {
 
-          radius = _this.getRadius(_this.matrix, i, j);
+          radius = this.getRadius(this.matrix, i, j);
           radius = radius ? radius : 1;
 
-          _this.circles[i][j].radius = radius;
+          this.circles[i][j].radius = radius;
         }
       }
 
-      _this.canvas.redraw();
+      this.canvas.redraw();
     },
   });
 
