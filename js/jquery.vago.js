@@ -120,18 +120,32 @@
 
   function Vago(element, options) {
     var defaults = {
-      background: getRandomColor(),
-      color: getRandomColor(),
-      points: Math.floor(Math.random() * 3) + 1,
+      background: null,
+      color: null,
+      points: null,
       windowSize: 1,
       maxRadius: null,
       degradationLevel: 0.3,
     };
 
     this.element = element;
-    this.settings = $.extend({}, defaults, options);
     this._defaults = defaults;
     this._name = pluginName;
+
+    this.settings = $.extend({}, defaults, options);
+
+    if (!this.settings.background) {
+      this.settings.background = getRandomColor();
+    }
+
+    if (!this.settings.color) {
+      this.settings.color = getRandomColor();
+    }
+
+    if (!this.settings.points) {
+      this.settings.points = Math.floor(Math.random() * 3) + 1;
+    }
+
     this.init();
   }
 
