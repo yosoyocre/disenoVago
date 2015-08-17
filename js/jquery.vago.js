@@ -170,6 +170,7 @@
       var x = this.settings.maxRadius;
       var y = this.settings.maxRadius;
       var image;
+      var square;
       var i;
       var j;
 
@@ -178,6 +179,10 @@
 
           radius = this.getRadius(this.matrix, i, j);
           radius = radius ? radius : 1;
+
+          // if ((j >= (maxY - 20)) && (i >= (maxX - 20))) {
+          //   radius = 1;
+          // }
 
           circle = this.canvas.display.ellipse({
             x: x,
@@ -194,6 +199,18 @@
         x = this.settings.maxRadius;
         y = y + this.settings.maxRadius * 2;
       }
+
+      square = this.canvas.display.rectangle({
+        x: this.canvas.width - 200,
+        y: this.canvas.height - 200,
+        width: 200,
+        height: 200,
+        fill: this.settings.background,
+
+        // fill: this.settings.background.replace(', 1)', ', 0.8)'),
+      });
+
+      // this.canvas.addChild(square, false);
 
       image = this.canvas.display.image({
         x: 0,
