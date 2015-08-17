@@ -198,10 +198,6 @@
           radius = this.getRadius(this.matrix, i, j);
           radius = radius ? radius : 1;
 
-          // if ((j >= (maxY - 20)) && (i >= (maxX - 20))) {
-          //   radius = 1;
-          // }
-
           circle = this.canvas.display.ellipse({
             x: x,
             y: y,
@@ -224,11 +220,7 @@
         width: 200,
         height: 200,
         fill: this.settings.background,
-
-        // fill: this.settings.background.replace(', 1)', ', 0.8)'),
       });
-
-      // this.canvas.addChild(square, false);
 
       image = this.canvas.display.image({
         x: 0,
