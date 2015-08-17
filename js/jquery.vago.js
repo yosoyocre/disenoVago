@@ -19,6 +19,50 @@
     return b;
   }
 
+  function getRadius(matrix, x, y) {
+      if (x < 0 || x >= maxX) {
+        return null;
+      }
+
+      if (y < 0 || y >= maxY) {
+        return null;
+      }
+
+      if (!matrix[x]) {
+        return null;
+      }
+
+      if (!matrix[x][y]) {
+        return null;
+      }
+
+      return matrix[x][y];
+    }
+
+  function getAverageRadius(matrix, windowSize, x, y) {
+      var i;
+      var j;
+      var radius;
+      var averageRadius = 0;
+      var n = 0;
+
+      for (i = (windowSize * -1); i <= windowSize; i = i + 1) {
+        for (j = (windowSize * -1); j <= windowSize; j = j + 1) {
+          if (i === 0 && j === 0) {
+            continue;
+          }
+
+          radius = getRadius(matrix, x + i, y + j);
+          if (radius !== null) {
+            averageRadius = averageRadius + radius;
+            n++;
+          }
+        }
+      }
+
+      return n ? averageRadius / n : null;
+    }
+
   function getLuminance(r, g, b) {
     // Fórmula: http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef
     var rgba = [r,g,b];
@@ -100,50 +144,6 @@
       }
     },
 
-    getAverageRadius: function(matrix, x, y) {
-        var i;
-        var j;
-        var radius;
-        var averageRadius = 0;
-        var n = 0;
-
-        for (i = (this.settings.windowSize * -1); i <= this.settings.windowSize; i = i + 1) {
-          for (j = (this.settings.windowSize * -1); j <= this.settings.windowSize; j = j + 1) {
-            if (i === 0 && j === 0) {
-              continue;
-            }
-
-            radius = this.getRadius(matrix, x + i, y + j);
-            if (radius !== null) {
-              averageRadius = averageRadius + radius;
-              n++;
-            }
-          }
-        }
-
-        return n ? averageRadius / n : null;
-      },
-
-    getRadius: function(matrix, x, y) {
-        if (x < 0 || x >= maxX) {
-          return null;
-        }
-
-        if (y < 0 || y >= maxY) {
-          return null;
-        }
-
-        if (!matrix[x]) {
-          return null;
-        }
-
-        if (!matrix[x][y]) {
-          return null;
-        }
-
-        return matrix[x][y];
-      },
-
     init: function() {
 
       this.canvas = oCanvas.create({ canvas: this.element, background: this.settings.background });
@@ -192,7 +192,7 @@
             }
 
             if (!auxMatrix[i][j]) {
-              radius = this.getAverageRadius(this.matrix, i, j);
+              radius = getAverageRadius(this.matrix, this.settings.windowSize, i, j);
               if (radius !== null) {
                 degradation = Math.random();
                 if (degradation >= this.settings.degradationLevel) {
@@ -226,7 +226,7 @@
       for (j = 0; j < maxY; j = j + 1) {
         for (i = 0; i < maxX; i = i + 1) {
 
-          radius = this.getRadius(this.matrix, i, j);
+          radius = getRadius(this.matrix, i, j);
           radius = radius ? radius : 1;
 
           circle = this.canvas.display.ellipse({
