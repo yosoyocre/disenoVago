@@ -3,33 +3,9 @@
   'use strict';
 
   var pluginName = 'vago';
-  var gray = new Color('rgba(200, 200, 200, 1)');
+  var grayLuminance = getLuminance(200, 200, 200);
   var maxX;
   var maxY;
-
-  function getRandomColor() {
-    var r;
-    var g;
-    var b;
-    var rgba;
-    var color;
-    var contrast;
-
-    r = Math.floor(Math.random() * 255);
-    g = Math.floor(Math.random() * 255);
-    b = Math.floor(Math.random() * 255);
-
-    rgba = 'rgba(' + r + ', ' + g + ', ' + b + ', 1)';
-
-    color = new Color(rgba);
-    contrast = color.contrast(gray).ratio;
-
-    if (contrast < 2) {
-      return getRandomColor();
-    }
-
-    return rgba;
-  }
 
   function cloneArray(a) {
     var b = [];
@@ -41,6 +17,61 @@
     }
 
     return b;
+  }
+
+  function getLuminance(r, g, b) {
+    // Fórmula: http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef
+    var rgba = [r,g,b];
+    var rgb;
+
+    for (var i = 0; i < 3; i++) {
+      rgb = rgba[i];
+
+      rgb /= 255;
+
+      rgb = rgb < 0.03928 ? rgb / 12.92 : Math.pow((rgb + 0.055) / 1.055, 2.4);
+
+      rgba[i] = rgb;
+    }
+
+    return 0.2126 * rgba[0] + 0.7152 * rgba[1] + 0.0722 * rgba[2];
+  }
+
+  function getContrastWidthGrey(r, g, b) {
+    var l1 = getLuminance(r, g, b) + 0.05;
+    var l2 = grayLuminance;
+    var ratio = l1 / l2;
+
+    if (l2 > l1) {
+      ratio = 1 / ratio;
+    }
+
+    return ratio;
+  }
+
+  function getRandomColor() {
+    var r;
+    var g;
+    var b;
+    var rgba;
+    var contrast;
+
+    r = Math.floor(Math.random() * 255);
+    g = Math.floor(Math.random() * 255);
+    b = Math.floor(Math.random() * 255);
+
+    rgba = 'rgba(' + r + ', ' + g + ', ' + b + ', 1)';
+
+    contrast = getContrastWidthGrey(r, g, b);
+
+    if (contrast < 2) {
+      // Para mejorar la legibilidad de "OCRE es VAGO", descartamos los colores
+      // con poco contraste con el gris
+
+      return getRandomColor();
+    }
+
+    return rgba;
   }
 
   function Vago(element, options) {
