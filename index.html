@@ -11,12 +11,15 @@
 	<script src="js/jquery.vago.js"></script>
 	<script>
 		$(function() {
-			$('.js-cover').Vago();
+			var $cover = $('.js-cover').vago();
+			var cover = $.data($cover.get(0), 'plugin_vago');
 
 			var $faviconCanvas = $('<canvas width="16" height="16">');
 			var $favicon = $('<link>');
 
-			$faviconCanvas.Vago({
+			$faviconCanvas.vago({
+				background: cover.settings.background,
+				color: cover.settings.color,
 				maxRadius: 4,
 				points: 1,
 				degradationLevel: 1,

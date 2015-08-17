@@ -2,15 +2,7 @@
 
   'use strict';
 
-  var pluginName = 'Vago';
-  var defaults = {
-    background: getRandomColor(),
-    color: getRandomColor(),
-    points: Math.floor(Math.random() * 3) + 1,
-    windowSize: 1,
-    maxRadius: null,
-    degradationLevel: 0.3,
-  };
+  var pluginName = 'vago';
   var maxX;
   var maxY;
 
@@ -34,6 +26,15 @@
   }
 
   function Vago(element, options) {
+    var defaults = {
+      background: getRandomColor(),
+      color: getRandomColor(),
+      points: Math.floor(Math.random() * 3) + 1,
+      windowSize: 1,
+      maxRadius: null,
+      degradationLevel: 0.3,
+    };
+
     this.element = element;
     this.settings = $.extend({}, defaults, options);
     this._defaults = defaults;
