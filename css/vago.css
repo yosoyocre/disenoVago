@@ -2,13 +2,17 @@
   margin-top: 50px;
 }
 
+.row {
+  margin-bottom: 20px;
+}
+
+h3 {
+  margin-bottom: 20px;
+}
+
 .cover {
   border: 1px solid rgb(214,214,214);
   box-shadow: 4px 4px 5px #DDD;
   width: 500px;
   height: 500px;
-}
-
-.row {
-  margin-bottom: 20px;
 }
