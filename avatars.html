@@ -1,0 +1,92 @@
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>ocre | vago</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="vendor/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/vago.css">
+
+	<script src="vendor/jquery/jquery.min.js"></script>
+	<script src="vendor/ocanvas/ocanvas.min.js"></script>
+	<script src="js/jquery.vago.js"></script>
+	<script>
+		$(function() {
+
+      var avatarsConfig = {
+        facebookAvatar: {
+          width: '160px',
+          height: '160px',
+          options: {
+            maxRadius: 80
+          }
+        },
+        facebookCover: {
+          width: '851px',
+          height: '315px',
+          options: {
+            maxRadius: 5
+          }
+        },
+        twitterAvatar: {
+          width: '400px',
+          height: '400px',
+          options: {
+            maxRadius: 5
+          }
+        },
+        twitterCover: {
+          width: '1500px',
+          height: '500px',
+          options: {
+            maxRadius: 5
+          }
+        },
+      }
+
+      var hash = window.location.hash;
+
+      if (hash) {
+        $('.js-avatar-selector').val(hash.substring(1));
+
+        var $canvas = $('<canvas>');
+        var avatarConfig = avatarsConfig[hash.substring(1)];
+
+        $canvas
+          .attr('width', avatarConfig.width)
+          .attr('height', avatarConfig.height)
+          .addClass('center-block')
+          .vago($.extend({addTitle: false}, avatarConfig.options));
+
+        $('.js-avatar').append($canvas);
+      }
+
+      $('.js-avatar-selector').change(function() {
+          window.location.hash = '#' + $(this).val();
+          location.reload();
+      });
+
+		});
+	</script>
+</head>
+<body>
+	<div class="main-container container-fluid">
+    <div class="row">
+        <div class="form-group col-lg-4 col-lg-offset-4">
+          <select class="form-control js-avatar-selector">
+            <option value="">Selecciona un avatar</option>
+            <option value="facebookAvatar">Avatar de Facebook</option>
+            <option value="facebookCover">Portada de Facebook</option>
+            <option value="twitterAvatar">Avatar de Twitter</option>
+            <option value="twitterCover">Portada de Twitter</option>
+          </select>
+        </div>
+      </div>
+    </div>
+		<div class="row">
+			<div class="col-lg-12 js-avatar">
+			</div>
+		</div>
+
+	</div>
+</body>
+</html>

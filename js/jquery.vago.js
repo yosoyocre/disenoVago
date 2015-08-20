@@ -208,7 +208,7 @@
       this.canvas = oCanvas.create({ canvas: this.element, background: this.settings.background });
 
       if (!this.settings.maxRadius) {
-        this.settings.maxRadius = Math.floor(Math.min(this.canvas.width, this.canvas.height) / 100);
+        this.settings.maxRadius = Math.floor(Math.max(this.canvas.width, this.canvas.height) / 100);
       }
 
       this.maxX = this.canvas.width / (this.settings.maxRadius * 2);
