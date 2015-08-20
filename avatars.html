@@ -15,8 +15,8 @@
       var avatarsConfig = {
         facebookAvatar: {
 					title: 'Avatar de Facebook',
-          width: '160px',
-          height: '160px',
+          width: '180px',
+          height: '180px',
           options: {
             maxRadius: 5
           }
@@ -63,7 +63,7 @@
 
 				for ( var i = 0; i < searchParameters.length; i++) {
 						p = searchParameters[i].split('=');
-		        parameters[p[0]] = p[1];
+		        parameters[p[0]] = decodeURIComponent(p[1]);
 		    }
 
         var $canvas;
