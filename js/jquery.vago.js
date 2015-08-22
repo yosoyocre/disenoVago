@@ -303,7 +303,9 @@
         y += 2 * this.settings.maxRadius;
       }
 
-      ctx.drawImage(this.cover, 0, 0, this.canvas.width, this.canvas.height);
+      if (this.settings.addTitle) {
+        ctx.drawImage(this.cover, 0, 0, this.canvas.width, this.canvas.height);
+      }
     },
   });
 
