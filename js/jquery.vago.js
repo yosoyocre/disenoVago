@@ -205,7 +205,7 @@
 
     init: function() {
 
-      this.canvas = oCanvas.create({ canvas: this.element, background: this.settings.background });
+      this.canvas = this.element;
 
       if (!this.settings.maxRadius) {
         this.settings.maxRadius = Math.floor(Math.max(this.canvas.width, this.canvas.height) / 100);
@@ -215,6 +215,9 @@
       this.maxY = this.canvas.height / (this.settings.maxRadius * 2);
       this.matrix = [];
       this.circles = [];
+
+      this.cover = new Image();
+      this.cover.src = 'templates/front.png';
 
       this.logSettings();
 
@@ -235,41 +238,6 @@
         }
 
         this.matrix[i][j] = this.settings.maxRadius;
-      }
-
-      for (j = 0; j < this.maxY; j = j + 1) {
-        for (i = 0; i < this.maxX; i = i + 1) {
-
-          if (!this.circles[i]) {
-            this.circles[i] = [];
-          }
-
-          this.circles[i][j] = this.canvas.display.ellipse({
-            x: x,
-            y: y,
-            radius: 1,
-            fill: this.settings.color,
-          });
-
-          this.canvas.addChild(this.circles[i][j], false);
-
-          x = x + this.settings.maxRadius * 2;
-        }
-
-        x = this.settings.maxRadius;
-        y = y + this.settings.maxRadius * 2;
-      }
-
-      if (this.settings.addTitle) {
-        image = this.canvas.display.image({
-          x: 0,
-          y: 0,
-          image: 'templates/front.png',
-          width: this.canvas.width,
-          height: this.canvas.height,
-        });
-
-        this.canvas.addChild(image, false);
       }
 
       this.draw();
@@ -305,22 +273,37 @@
     stepDraw: function() {
 
       var radius;
-      var circle;
-      var image;
       var i;
       var j;
+      var ctx = this.canvas.getContext('2d');
+      var path;
+      var x;
+      var y = this.settings.maxRadius;
+
+      ctx.fillStyle = this.settings.background;
+      ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+      ctx.fillStyle = this.settings.color;
 
       for (j = 0; j < this.maxY; j = j + 1) {
+        x = this.settings.maxRadius;
+
         for (i = 0; i < this.maxX; i = i + 1) {
 
           radius = this.getRadius(this.matrix, i, j);
           radius = radius ? radius : 1;
 
-          this.circles[i][j].radius = radius;
+          path = new Path2D();
+          path.arc(x, y, radius, 0, 2 * Math.PI);
+
+          ctx.fill(path);
+          x += 2 * this.settings.maxRadius;
         }
+
+        y += 2 * this.settings.maxRadius;
       }
 
-      this.canvas.redraw();
+      ctx.drawImage(this.cover, 0, 0, this.canvas.width, this.canvas.height);
     },
   });
 
